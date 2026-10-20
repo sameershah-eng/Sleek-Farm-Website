@@ -1,0 +1,6 @@
+{
+  "name": "Springbrook Downes",
+  "description": "Authentic heritage farm sanctuary, Highland cattle encounters, citrus buggy orchard tours, and artisan workshops at Springbrook Downes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

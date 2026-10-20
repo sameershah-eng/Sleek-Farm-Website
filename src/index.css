@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --color-farm-green: #204128;
+  --color-farm-sage: #4E6E50;
+  --color-farm-olive: #68795A;
+  --color-farm-cream: #FAF7F2;
+  --color-farm-sand: #EFE9DE;
+  --color-farm-earth: #8C593B;
+  --color-farm-charcoal: #1F251E;
+}
+
+@layer base {
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    background-color: #FAF7F2;
+    color: #1F251E;
+    overflow-x: hidden;
+  }
+}
+
+/* Consistent warm cinematic color grading for all farm photos */
+.farm-photo-grade {
+  filter: saturate(1.06) contrast(1.03) brightness(0.99) sepia(0.04);
+  transition: filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.font-fraunces {
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.text-stroke-fraunces {
+  -webkit-text-stroke: 1.5px rgba(32, 65, 40, 0.4);
+  color: transparent;
+}
+
+/* Hide scrollbar for clean horizontal snap scroll on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth Lenis styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Prefers reduced motion overrides */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
