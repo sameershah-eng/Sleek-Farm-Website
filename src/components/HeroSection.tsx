@@ -6,9 +6,14 @@ import { ArrowDown, Sparkles, Image as ImageIcon } from 'lucide-react';
 interface HeroSectionProps {
   onReserve: () => void;
   onExplore: () => void;
+  introDone?: boolean;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onReserve, onExplore }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({
+  onReserve,
+  onExplore,
+  introDone = true,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeHeroPhoto, setActiveHeroPhoto] = useState<number>(0);
 
@@ -99,8 +104,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserve, onExplore }
           <div className="overflow-hidden mb-3">
             <motion.div
               initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              animate={{ y: introDone ? 0 : '100%' }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="flex items-center gap-2 text-xs md:text-sm uppercase tracking-[0.25em] text-[#EFE9DE]/95 font-medium"
             >
               <span>Springbrook Downes</span>
@@ -116,10 +121,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserve, onExplore }
                 {word.italic ? (
                   <motion.span
                     initial={{ y: '110%', opacity: 0, letterSpacing: '0.08em' }}
-                    animate={{ y: 0, opacity: 1, letterSpacing: '0em' }}
+                    animate={{
+                      y: introDone ? 0 : '110%',
+                      opacity: introDone ? 1 : 0,
+                      letterSpacing: introDone ? '0em' : '0.08em',
+                    }}
                     transition={{
                       duration: 0.9,
-                      delay: 0.45 + idx * 0.08,
+                      delay: introDone ? 0.3 + idx * 0.08 : 0,
                       ease: [0.22, 1, 0.36, 1],
                     }}
                     className="inline-block italic font-light text-[#D4C3A3]"
@@ -129,10 +138,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserve, onExplore }
                 ) : (
                   <motion.span
                     initial={{ y: '110%' }}
-                    animate={{ y: 0 }}
+                    animate={{ y: introDone ? 0 : '110%' }}
                     transition={{
                       duration: 0.8,
-                      delay: 0.25 + idx * 0.08,
+                      delay: introDone ? 0.15 + idx * 0.08 : 0,
                       ease: [0.22, 1, 0.36, 1],
                     }}
                     className="inline-block"
@@ -147,8 +156,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserve, onExplore }
           {/* Subtitle / body text */}
           <motion.p
             initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            animate={{
+              opacity: introDone ? 1 : 0,
+              y: introDone ? 0 : 24,
+            }}
+            transition={{ duration: 0.8, delay: introDone ? 0.65 : 0, ease: [0.22, 1, 0.36, 1] }}
             className="mt-5 text-base md:text-lg text-[#EFE9DE]/90 font-normal max-w-xl leading-relaxed"
           >
             Step into 120 acres of rotational pastures, flowering citrus groves, and beloved
@@ -158,8 +170,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserve, onExplore }
           {/* CTAs and quick facts */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.05, ease: [0.22, 1, 0.36, 1] }}
+            animate={{
+              opacity: introDone ? 1 : 0,
+              y: introDone ? 0 : 20,
+            }}
+            transition={{ duration: 0.8, delay: introDone ? 0.85 : 0, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 flex flex-wrap items-center gap-4"
           >
             <MagneticButton

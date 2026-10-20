@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { AnimatePresence } from 'motion/react';
 import { useLenisSmoothScroll } from './hooks/useLenisSmoothScroll';
 import { CustomCursor } from './components/CustomCursor';
-import { PageLoadIntro } from './components/PageLoadIntro';
+import { IntroLoader } from './components/PageLoadIntro';
 import { PageTransitionOverlay } from './components/PageTransitionOverlay';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
@@ -17,6 +18,62 @@ import { Footer } from './components/Footer';
 export default function App() {
   // Initialize Lenis smooth scroll
   useLenisSmoothScroll(true);
+
+  // Single state in App for IntroLoader
+  // Checks prefers-reduced-motion and sessionStorage("introSeen") safely inside try/catch
+  const [showIntro, setShowIntro] = useState(() => {
+    try {
+      if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return false;
+      }
+      return !sessionStorage.getItem('introSeen');
+    } catch {
+      return false;
+    }
+  });
+
+  // Manage timer, failsafe timer, user skip, and Lenis coordination
+  useEffect(() => {
+    if (!showIntro) {
+      (window as unknown as { lenis?: { start: () => void } }).lenis?.start();
+      return;
+    }
+
+    // Stop Lenis while intro is showing (do not lock body overflow)
+    (window as unknown as { lenis?: { stop: () => void; start: () => void } }).lenis?.stop();
+
+    const hideIntro = () => {
+      setShowIntro(false);
+      try {
+        sessionStorage.setItem('introSeen', 'true');
+      } catch {}
+      (window as unknown as { lenis?: { start: () => void } }).lenis?.start();
+    };
+
+    // 1. Primary timer of 1600ms
+    const timer = setTimeout(() => {
+      hideIntro();
+    }, 1600);
+
+    // 2. Hard failsafe timer of 3000ms
+    const failsafeTimer = setTimeout(() => {
+      hideIntro();
+    }, 3000);
+
+    // 3. User skip on any keypress
+    const handleKeyDown = () => {
+      hideIntro();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(failsafeTimer);
+      window.removeEventListener('keydown', handleKeyDown);
+      // Always restore scrolling in effect cleanup
+      (window as unknown as { lenis?: { start: () => void } }).lenis?.start();
+    };
+  }, [showIntro]);
 
   // Navigation & View State
   const [activeTab, setActiveTab] = useState<'home' | 'animals' | 'workshops' | 'story' | 'gallery'>('home');
@@ -68,8 +125,21 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-[#FAF7F2] text-[#1F251E] selection:bg-[#204128] selection:text-[#FAF7F2]">
-      {/* First visit page load intro curtain */}
-      <PageLoadIntro />
+      {/* First visit page load intro curtain with state-driven AnimatePresence */}
+      <AnimatePresence>
+        {showIntro && (
+          <IntroLoader
+            key="intro"
+            onDismiss={() => {
+              setShowIntro(false);
+              try {
+                sessionStorage.setItem('introSeen', 'true');
+              } catch {}
+              (window as unknown as { lenis?: { start: () => void } }).lenis?.start();
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Lagging ring custom cursor with hover labels */}
       <CustomCursor />
@@ -88,10 +158,11 @@ export default function App() {
         onOpenBooking={() => handleOpenBooking()}
       />
 
-      {/* Main Content Area */}
+      {/* Main Content Area - rendered immediately behind the overlay */}
       <main id="main-content">
         {/* Full Screen Cinematic Hero */}
         <HeroSection
+          introDone={!showIntro}
           onReserve={() => handleOpenBooking('highland-walk')}
           onExplore={() => {
             const el = document.getElementById('animals');
